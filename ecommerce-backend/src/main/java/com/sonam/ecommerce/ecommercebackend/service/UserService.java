@@ -9,6 +9,8 @@ public interface UserService {
     public User login(User user);
     public void userExists(int userId);
     public User findUser(int userId);
+
+    //public User loadUserByUsername(String username);
     public List<User> findUsers();
 
 }
