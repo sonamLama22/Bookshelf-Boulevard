@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
+//@PreAuthorize("hasAuthority('ADMIN')")
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
 public class AdminApiController {
@@ -27,12 +28,11 @@ public class AdminApiController {
     }
 
     // http://localhost:8080/api/admin/users
-    @GetMapping("/users")
+    @GetMapping("/getUsers")
     public ResponseEntity<?> getUsers(){
         List<User> list = userService.findUsers();
         System.out.println(list);
         return new ResponseEntity<>(HttpStatus.OK).ok(list);
     }
-
 
 }

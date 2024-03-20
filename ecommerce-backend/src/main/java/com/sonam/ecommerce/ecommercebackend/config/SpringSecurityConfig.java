@@ -50,12 +50,13 @@ public class SpringSecurityConfig {
         http.csrf(csrf-> csrf.disable())
                 .cors(cors->cors.disable())
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/**")
-                        .permitAll()
+                        .permitAll() // request to this endpoint is allowed without authentication
+                        // for all other endpoints, access is needed
                         .requestMatchers("/api/user/**").hasAuthority(Role.USER.name())
                         .requestMatchers("/api/admin/**").hasAuthority(Role.ADMIN.name())
                         .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(point))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); //not used for tracking
 
         http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
                 return http.build();

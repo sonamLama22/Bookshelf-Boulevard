@@ -51,7 +51,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
         jwtAuthResponse.setToken(jwt);
-        jwtAuthResponse.setRefershToken(refreshToken);
+        jwtAuthResponse.setRefreshToken(refreshToken);
         return jwtAuthResponse;
     }
 
@@ -64,7 +64,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
             JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
             jwtAuthResponse.setToken(jwt);
-            jwtAuthResponse.setRefershToken(refreshTokenRequest.getToken());
+            jwtAuthResponse.setRefreshToken(refreshTokenRequest.getToken());
             return jwtAuthResponse;
         }
         return null;

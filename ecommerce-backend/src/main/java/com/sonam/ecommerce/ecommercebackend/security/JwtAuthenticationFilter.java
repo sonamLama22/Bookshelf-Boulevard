@@ -30,18 +30,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private UserDetailsService userDetailsService;
 
+    // invoked for every request to the app.
+    // Inspects 'Authorization' header to identify and validate a Bearer token.
+    // Authenticate users if token is valid.
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        //Authorization
+        // checks for Authorization header in request
         String requestHeader = request.getHeader("Authorization");
-        //Bearer
+        //checks for Bearer token
         logger.info(" Header :  {}", requestHeader);
         String username = null;
         String token = null;
 
+        //If 'Authorization' and 'Bearer' are found, validate and authenticate the token
         if (requestHeader != null && requestHeader.startsWith("Bearer")) {
-            token = requestHeader.substring(7);
+            token = requestHeader.substring(7); //extract access token
             try {
                 username = this.jwtHelper.getUsernameFromToken(token);
             } catch (IllegalArgumentException e) {
@@ -62,6 +66,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             //fetch user detail from username
+            //validate token, and create 'Authentication' object
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
             Boolean validateToken = this.jwtHelper.validateToken(token, userDetails);
             if (validateToken) {
