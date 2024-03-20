@@ -5,8 +5,6 @@ import com.sonam.ecommerce.ecommercebackend.dto.RefreshTokenRequest;
 import com.sonam.ecommerce.ecommercebackend.dto.SignInRequest;
 import com.sonam.ecommerce.ecommercebackend.dto.SignUpRequest;
 import com.sonam.ecommerce.ecommercebackend.entity.User;
-import com.sonam.ecommerce.ecommercebackend.model.JwtRequest;
-import com.sonam.ecommerce.ecommercebackend.model.JwtResponse;
 import com.sonam.ecommerce.ecommercebackend.security.JwtHelper;
 import com.sonam.ecommerce.ecommercebackend.service.AuthenticationService;
 import com.sonam.ecommerce.ecommercebackend.service.implementation.UserServiceImpl;
