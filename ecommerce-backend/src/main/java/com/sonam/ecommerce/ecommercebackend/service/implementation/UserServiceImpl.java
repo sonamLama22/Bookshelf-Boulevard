@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User register(User user) {
-        //user.setUserId(UUID.randomUUID().hashCode());
+        user.setUserId(UUID.randomUUID().hashCode());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepo.save(user);   // save to db
     }

@@ -6,23 +6,35 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import java.io.Serializable;
 import java.security.Key;
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
 @Component
-public class JwtHelper {
+public class JwtHelper  {
 
-    //requirement :
-    public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60; //milliseconds
+    public static final long JWT_TOKEN_VALIDITY = 1 * 60 * 60; // token is valid for 1 hour
 
-    //    public static final long JWT_TOKEN_VALIDITY =  60;
-    private final String secret = "afafasfafafasfasfasfafacasdasfasxASFACASDFACASDFASFASFDAFASFASDAADSCSDFADCVSGCFVADXCcadwavfsfarvf";
+    private String secret = generateSafeToken(); // contains Base64-encoded secret key
+
+    private String generateSafeToken() {
+        // Generate a secure random byte array with 64 bytes (512 bits)
+        byte[] secretBytes = new byte[64];
+        new SecureRandom().nextBytes(secretBytes);
+
+        // Convert the byte array to a Base64-encoded string
+        return Base64.getEncoder().encodeToString(secretBytes);
+    }
+
 
     //retrieve username from jwt token
     public String getUsernameFromToken(String token) {
@@ -74,8 +86,10 @@ public class JwtHelper {
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
+    // obtain a signing key for JWT token generation using a secret.
     private Key getSignKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secret);
+        System.out.println("Secret: "+secret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }
