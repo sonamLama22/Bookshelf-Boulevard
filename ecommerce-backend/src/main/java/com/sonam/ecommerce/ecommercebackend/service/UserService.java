@@ -1,16 +1,14 @@
 package com.sonam.ecommerce.ecommercebackend.service;
 
 import com.sonam.ecommerce.ecommercebackend.entity.User;
+import com.sonam.ecommerce.ecommercebackend.exception.ResourceNotFoundException;
 
 import java.util.List;
 
 public interface UserService {
-    //public User register(User user);
-    //public User login(User user);
-    public void userExists(int userId);
-    public User findUser(int userId);
 
-    //public User loadUserByUsername(String username);
+    public void userExists(int userId) throws ResourceNotFoundException;
+    public User findUser(int userId) throws ResourceNotFoundException;
     public List<User> findUsers();
 
 }

@@ -1,6 +1,7 @@
 package com.sonam.ecommerce.ecommercebackend.service.implementation;
 
 import com.sonam.ecommerce.ecommercebackend.entity.User;
+import com.sonam.ecommerce.ecommercebackend.exception.ResourceNotFoundException;
 import com.sonam.ecommerce.ecommercebackend.repository.UserRepo;
 import com.sonam.ecommerce.ecommercebackend.service.UserService;
 import org.slf4j.Logger;
@@ -21,34 +22,16 @@ public class UserServiceImpl implements UserService {
     @Autowired
     public UserRepo userRepo;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
- //   @Override
-//    public User register(User user) {
-//        user.setUserId(UUID.randomUUID().hashCode());
-//        user.setPassword(passwordEncoder.encode(user.getPassword()));
-//        return userRepo.save(user);   // save to db
-//    }
-
-//    @Override
-//    public User login(User user) {
-//        return userRepo.findByEmail(user.getEmail());
-//    }
-
     @Override
-    public void userExists(int userId) {
-        userRepo.findById(userId);
+    public void userExists(int userId) throws ResourceNotFoundException {
+        userRepo.findById(userId).orElseThrow(()-> new ResourceNotFoundException("User not found for this id::"+userId));
 
     }
 
     @Override
-    public User findUser(int userId) {
-        return userRepo.findById(userId).get();
+    public User findUser(int userId) throws ResourceNotFoundException {
+        return userRepo.findById(userId).orElseThrow(()->new ResourceNotFoundException("User not found for this id::"+userId));
     }
-
-    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
-
 
     @Override
     public List<User> findUsers() {
