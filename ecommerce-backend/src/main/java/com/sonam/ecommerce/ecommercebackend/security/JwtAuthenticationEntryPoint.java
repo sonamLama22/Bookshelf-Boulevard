@@ -13,7 +13,7 @@ import java.io.PrintWriter;
 @Component  // To autowire
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-    // Called whenever an exception is thrown due to unauthenticated user tries to access the protected resource.
+    // Called whenever an exception is thrown due to unauthenticated user trying to access the protected resource.
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

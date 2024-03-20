@@ -1,8 +1,10 @@
 package com.sonam.ecommerce.ecommercebackend.config;
 
+import com.sonam.ecommerce.ecommercebackend.entity.Role;
 import com.sonam.ecommerce.ecommercebackend.repository.UserRepo;
 import com.sonam.ecommerce.ecommercebackend.security.JwtAuthenticationEntryPoint;
 import com.sonam.ecommerce.ecommercebackend.security.JwtAuthenticationFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,6 +29,7 @@ import org.springframework.util.AntPathMatcher;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SpringSecurityConfig {
 
     @Autowired
@@ -46,10 +49,10 @@ public class SpringSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http.csrf(csrf-> csrf.disable())
                 .cors(cors->cors.disable())
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/register", "/api/auth/login")
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/**")
                         .permitAll()
-                        .requestMatchers("/api/auth/user/**").hasAuthority("USER")
-                        .requestMatchers("/api/auth/admin/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/user/**").hasAuthority(Role.USER.name())
+                        .requestMatchers("/api/admin/**").hasAuthority(Role.ADMIN.name())
                         .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(point))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
@@ -65,6 +68,5 @@ public class SpringSecurityConfig {
         provider.setPasswordEncoder(passwordEncoder);
         return provider;
     }
-
 
 }

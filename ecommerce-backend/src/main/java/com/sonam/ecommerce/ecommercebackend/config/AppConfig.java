@@ -15,10 +15,10 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 public class AppConfig {
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder(){ // for securely hashing and verifying passwords
         return new BCryptPasswordEncoder();
     }
-    
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();

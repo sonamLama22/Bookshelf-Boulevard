@@ -6,11 +6,9 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import java.io.Serializable;
 import java.security.Key;
 import java.security.SecureRandom;
 import java.util.Base64;
@@ -22,7 +20,7 @@ import java.util.function.Function;
 @Component
 public class JwtHelper  {
 
-    public static final long JWT_TOKEN_VALIDITY = 1 * 60 * 60; // token is valid for 1 hour
+    public static final long JWT_TOKEN_VALIDITY = 24 * 60; // token is valid for 1 day
 
     private String secret = generateSafeToken(); // contains Base64-encoded secret key
 
@@ -36,7 +34,7 @@ public class JwtHelper  {
     }
 
 
-    //retrieve username from jwt token
+    //retrieve username(email) from jwt token
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
     }
@@ -51,7 +49,7 @@ public class JwtHelper  {
         return claimsResolver.apply(claims);
     }
 
-    //for retrieveing any information from token we will need the secret key
+    //for retrieving any information from token we will need the secret key
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser().setSigningKey(getSignKey()).build().parseClaimsJws(token).getBody();
     }
@@ -67,6 +65,14 @@ public class JwtHelper  {
         Map<String, Object> claims = new HashMap<>();
         return doGenerateToken(claims, userDetails.getUsername());
     }
+
+    //generate refresh token for user
+    public String generateRefreshToken(Map<String,Object> extraClaims, UserDetails userDetails) {
+        return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername()).setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 604800000)) // 7 days
+                .signWith(SignatureAlgorithm.HS512, secret).compact();
+    }
+
 
     //while creating the token -
     //1. Define  claims of the token, like Issuer, Expiration, Subject, and the ID
@@ -89,7 +95,7 @@ public class JwtHelper  {
     // obtain a signing key for JWT token generation using a secret.
     private Key getSignKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secret);
-        System.out.println("Secret: "+secret);
+        //System.out.println("Secret: "+secret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }

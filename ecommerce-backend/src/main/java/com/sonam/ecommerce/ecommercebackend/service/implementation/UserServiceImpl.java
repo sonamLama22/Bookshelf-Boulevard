@@ -24,17 +24,17 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Override
-    public User register(User user) {
-        user.setUserId(UUID.randomUUID().hashCode());
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepo.save(user);   // save to db
-    }
+ //   @Override
+//    public User register(User user) {
+//        user.setUserId(UUID.randomUUID().hashCode());
+//        user.setPassword(passwordEncoder.encode(user.getPassword()));
+//        return userRepo.save(user);   // save to db
+//    }
 
-    @Override
-    public User login(User user) {
-        return userRepo.findByEmail(user.getEmail());
-    }
+//    @Override
+//    public User login(User user) {
+//        return userRepo.findByEmail(user.getEmail());
+//    }
 
     @Override
     public void userExists(int userId) {
