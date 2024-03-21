@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -31,25 +32,26 @@ public class UserApiController {
     private TokenRepo tokenRepo;
 
     @GetMapping("/profile/{userId}")
-    public ResponseEntity<String> welcome(@PathVariable int userId,@RequestHeader("Authorization")  String authToken) throws ResourceNotFoundException {
+    @PreAuthorize("#userId == authentication.principal.userId")
+    // userId of the authenticated user must match the incoming userId in the request.
+    public ResponseEntity<String> welcome(@PathVariable int userId) throws ResourceNotFoundException {
 
-        //extract token from header
-        String tokenFromHeader = authToken.replace("Bearer ",""); // Remove "Bearer " prefix
-
-        // check if token associated with this userId exists.
-        String tokenInDB = tokenService.tokenExists(userId);
-        System.out.println("Token in db -->"+tokenInDB);
-
-        // Check if the token string matches the token of the userId
-        if (!tokenFromHeader.equals(tokenInDB)) {
-            // Return unauthorized response if the tokens don't match
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access");
-        }
+//        //extract token from header
+//        String tokenFromHeader = authToken.replace("Bearer ",""); // Remove "Bearer " prefix
+//
+//        // check if token associated with this userId exists.
+//        String tokenInDB = tokenService.tokenExists(userId);
+//        System.out.println("Token in db -->"+tokenInDB);
+//
+//        // Check if the token string matches the token of the userId
+//        if (!tokenFromHeader.equals(tokenInDB)) {
+//            // Return unauthorized response if the tokens don't match
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access");
+//        }
 
         // fetch the user details associated with the userId
         User user = userService.findUser(userId);
         String message = String.format("Welcome to %s's profile.", user.getUsername());
         return ResponseEntity.ok(message);
     }
-
 }
