@@ -6,14 +6,13 @@ import com.sonam.ecommerce.ecommercebackend.dto.SignInRequest;
 import com.sonam.ecommerce.ecommercebackend.dto.SignUpRequest;
 import com.sonam.ecommerce.ecommercebackend.entity.Role;
 import com.sonam.ecommerce.ecommercebackend.entity.Token;
-import com.sonam.ecommerce.ecommercebackend.entity.TokenType;
 import com.sonam.ecommerce.ecommercebackend.entity.User;
 import com.sonam.ecommerce.ecommercebackend.repository.TokenRepo;
 import com.sonam.ecommerce.ecommercebackend.repository.UserRepo;
 import com.sonam.ecommerce.ecommercebackend.security.JwtHelper;
 import com.sonam.ecommerce.ecommercebackend.service.AuthenticationService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -97,6 +96,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return null;
     }
 
+    // set all tokens as expired, so that a user can have only one valid token at a given time.
     private void revokeAllUserTokens(User user){
         var validUserTokens = tokenRepo.finAllValidTokensOfUser(user.getUserId());
         if(validUserTokens.isEmpty()){
@@ -104,7 +104,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         validUserTokens.forEach(t -> {
             t.setExpired(true);
-            t.setRevoked(true);
+
         });
         tokenRepo.saveAll(validUserTokens);
     }
@@ -113,9 +113,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var token = Token.builder()
                 .user(user)
                 .token(jwt)
-                .tokenType(TokenType.BEARER)
                 .expired(false)
-                .revoked(false)
                 .build();
         tokenRepo.save(token);
     }

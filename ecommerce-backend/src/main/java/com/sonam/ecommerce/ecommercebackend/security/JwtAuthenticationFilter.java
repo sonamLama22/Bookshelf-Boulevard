@@ -74,7 +74,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
             //check if token is valid on database side.
             var isTokenValid = tokenRepo.findByToken(token)
-                    .map(t-> !t.isExpired() && !t.isRevoked())
+                    .map(t-> !t.isExpired())
                     .orElse(false);
 
             Boolean validateToken = this.jwtHelper.validateToken(token, userDetails);
