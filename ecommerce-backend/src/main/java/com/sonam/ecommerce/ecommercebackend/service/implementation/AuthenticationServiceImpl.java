@@ -5,11 +5,15 @@ import com.sonam.ecommerce.ecommercebackend.dto.RefreshTokenRequest;
 import com.sonam.ecommerce.ecommercebackend.dto.SignInRequest;
 import com.sonam.ecommerce.ecommercebackend.dto.SignUpRequest;
 import com.sonam.ecommerce.ecommercebackend.entity.Role;
+import com.sonam.ecommerce.ecommercebackend.entity.Token;
+import com.sonam.ecommerce.ecommercebackend.entity.TokenType;
 import com.sonam.ecommerce.ecommercebackend.entity.User;
+import com.sonam.ecommerce.ecommercebackend.repository.TokenRepo;
 import com.sonam.ecommerce.ecommercebackend.repository.UserRepo;
 import com.sonam.ecommerce.ecommercebackend.security.JwtHelper;
 import com.sonam.ecommerce.ecommercebackend.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,23 +34,42 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final JwtHelper jwtHelper;
 
+    private final TokenRepo tokenRepo;
+
+
     @Override
-    public User signup(SignUpRequest signUpRequest){
+    public JwtAuthResponse signup(SignUpRequest signUpRequest){
         User user = new User();
         user.setUserId(UUID.randomUUID().hashCode());
         user.setEmail(signUpRequest.getEmail());
         user.setUsername(signUpRequest.getUsername());
         user.setRole(Role.USER);
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
-        return userRepo.save(user);
+        var savedUser = userRepo.save(user);
+        var jwt = jwtHelper.generateToken(user);
+
+        // persist generated token in database.
+        saveUserToken(savedUser, jwt);
+
+        var refreshToken = jwtHelper.generateRefreshToken(new HashMap<>(), user);
+
+        JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
+        jwtAuthResponse.setToken(jwt);
+        jwtAuthResponse.setRefreshToken(refreshToken);
+        return jwtAuthResponse;
     }
 
     @Override
     public JwtAuthResponse signin(SignInRequest signInRequest){
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signInRequest.getEmail(),
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                signInRequest.getEmail(),
                 signInRequest.getPassword()));
         var user = userRepo.findByEmail(signInRequest.getEmail()).orElseThrow(()-> new IllegalArgumentException("Invalid email or password"));
         var jwt = jwtHelper.generateToken(user);
+
+        revokeAllUserTokens(user);
+        saveUserToken(user,jwt);
+
         var refreshToken = jwtHelper.generateRefreshToken(new HashMap<>(), user);
 
         JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
@@ -59,8 +82,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public JwtAuthResponse refreshToken(RefreshTokenRequest refreshTokenRequest){
         String userEmail = jwtHelper.getUsernameFromToken(refreshTokenRequest.getToken());
         User user = userRepo.findByEmail(userEmail).orElseThrow();
+        // validate refresh token
         if(jwtHelper.validateToken(refreshTokenRequest.getToken(), user)){
             var jwt = jwtHelper.generateToken(user); // generate new jwt token with new expiration date.
+
+            revokeAllUserTokens(user);
+            saveUserToken(user,jwt);
 
             JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
             jwtAuthResponse.setToken(jwt);
@@ -69,4 +96,28 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         return null;
     }
+
+    private void revokeAllUserTokens(User user){
+        var validUserTokens = tokenRepo.finAllValidTokensOfUser(user.getUserId());
+        if(validUserTokens.isEmpty()){
+            return;
+        }
+        validUserTokens.forEach(t -> {
+            t.setExpired(true);
+            t.setRevoked(true);
+        });
+        tokenRepo.saveAll(validUserTokens);
+    }
+
+    private void saveUserToken(User user, String jwt) {
+        var token = Token.builder()
+                .user(user)
+                .token(jwt)
+                .tokenType(TokenType.BEARER)
+                .expired(false)
+                .revoked(false)
+                .build();
+        tokenRepo.save(token);
+    }
+
 }

@@ -4,6 +4,7 @@ import com.sonam.ecommerce.ecommercebackend.entity.Role;
 import com.sonam.ecommerce.ecommercebackend.repository.UserRepo;
 import com.sonam.ecommerce.ecommercebackend.security.JwtAuthenticationEntryPoint;
 import com.sonam.ecommerce.ecommercebackend.security.JwtAuthenticationFilter;
+import com.sonam.ecommerce.ecommercebackend.service.implementation.LogoutService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +16,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.util.AntPathMatcher;
 
@@ -44,6 +47,8 @@ public class SpringSecurityConfig {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    private final LogoutHandler logoutHandler;
+
     // configure HttpSecurity
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
@@ -58,7 +63,12 @@ public class SpringSecurityConfig {
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(point))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); //not used for tracking
 
-        http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
+        // Use JwtAuthenticationFilter before another filter
+        http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
+                .logout(logout -> logout.logoutUrl("/api/auth/logout")
+                        .addLogoutHandler(logoutHandler)
+                        .logoutSuccessHandler(((request, response, authentication) -> SecurityContextHolder.clearContext())));
+
                 return http.build();
     }
 

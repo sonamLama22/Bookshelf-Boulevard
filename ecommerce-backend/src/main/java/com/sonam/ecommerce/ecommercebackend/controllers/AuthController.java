@@ -7,6 +7,7 @@ import com.sonam.ecommerce.ecommercebackend.dto.SignUpRequest;
 import com.sonam.ecommerce.ecommercebackend.entity.User;
 import com.sonam.ecommerce.ecommercebackend.security.JwtHelper;
 import com.sonam.ecommerce.ecommercebackend.service.AuthenticationService;
+import com.sonam.ecommerce.ecommercebackend.service.implementation.AuthenticationServiceImpl;
 import com.sonam.ecommerce.ecommercebackend.service.implementation.UserServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,12 +27,14 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthenticationService authenticationService;
+    @Autowired
+    private AuthenticationServiceImpl authenticationService;
 
     // http://localhost:8080/api/auth/register
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest){
-        User registeredUser = authenticationService.signup(signUpRequest);
+//        User registeredUser = authenticationService.signup(signUpRequest);
+        JwtAuthResponse registeredUser = authenticationService.signup(signUpRequest);
         return new ResponseEntity<>(HttpStatus.OK).ok(registeredUser);
     }
 

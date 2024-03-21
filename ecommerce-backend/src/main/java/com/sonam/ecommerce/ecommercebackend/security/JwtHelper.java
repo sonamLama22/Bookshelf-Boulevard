@@ -21,7 +21,7 @@ import java.util.function.Function;
 @Component
 public class JwtHelper  {
 
-    public static final long JWT_TOKEN_VALIDITY = 24 * 60; // token is valid for 1 day
+    public static final long JWT_TOKEN_VALIDITY = 1 * 60 * 60; // token is valid for 1 hour
 
     private String secret = generateSafeToken(); // contains Base64-encoded secret key
 
@@ -96,7 +96,6 @@ public class JwtHelper  {
     // obtain a signing key for JWT token generation using a secret.
     private Key getSignKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secret);
-        //System.out.println("Secret: "+secret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }

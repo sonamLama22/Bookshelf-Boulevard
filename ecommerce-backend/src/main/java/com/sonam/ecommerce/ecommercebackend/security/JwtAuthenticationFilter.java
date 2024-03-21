@@ -1,5 +1,6 @@
 package com.sonam.ecommerce.ecommercebackend.security;
 
+import com.sonam.ecommerce.ecommercebackend.repository.TokenRepo;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
@@ -29,6 +30,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     private UserDetailsService userDetailsService;
+
+    @Autowired
+    private TokenRepo tokenRepo;
 
     // invoked for every request to the app.
     // Inspects 'Authorization' header to identify and validate a Bearer token.
@@ -68,8 +72,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             //fetch user detail from username
             //validate token, and create 'Authentication' object
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+            //check if token is valid on database side.
+            var isTokenValid = tokenRepo.findByToken(token)
+                    .map(t-> !t.isExpired() && !t.isRevoked())
+                    .orElse(false);
+
             Boolean validateToken = this.jwtHelper.validateToken(token, userDetails);
-            if (validateToken) {
+            if (validateToken && isTokenValid) {
                 //set the authentication
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

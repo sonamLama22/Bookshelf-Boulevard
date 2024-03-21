@@ -8,7 +8,8 @@ import com.sonam.ecommerce.ecommercebackend.entity.User;
 
 public interface AuthenticationService {
 
-    public User signup(SignUpRequest signUpRequest);
+//    public User signup(SignUpRequest signUpRequest);
+    public JwtAuthResponse signup(SignUpRequest signUpRequest);
     public JwtAuthResponse signin(SignInRequest signInRequest);
     public JwtAuthResponse refreshToken(RefreshTokenRequest refreshTokenRequest);
 
