@@ -1,5 +1,6 @@
 package com.sonam.ecommerce.ecommercebackend.controllers;
 
+import com.sonam.ecommerce.ecommercebackend.entity.Role;
 import com.sonam.ecommerce.ecommercebackend.entity.User;
 import com.sonam.ecommerce.ecommercebackend.exception.ResourceNotFoundException;
 import com.sonam.ecommerce.ecommercebackend.repository.TokenRepo;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,6 +32,7 @@ public class UserApiController {
 
     @Autowired
     private TokenRepo tokenRepo;
+    private final PasswordEncoder passwordEncoder;
 
     @GetMapping("/profile/{userId}")
     @PreAuthorize("#userId == authentication.principal.userId")
@@ -54,4 +57,32 @@ public class UserApiController {
         String message = String.format("Welcome to %s's profile.", user.getUsername());
         return ResponseEntity.ok(message);
     }
+
+    // User can delete their account
+    @DeleteMapping("/{userId}/profile/delete")
+    @PreAuthorize("#userId == authentication.principal.userId")
+    public ResponseEntity<?> deleteAccount(@PathVariable int userId) throws ResourceNotFoundException {
+        String message = userService.deleteUserAccount(userId);
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
+    // User can update their account
+    @PutMapping("/{userId}/profile/update")
+    @PreAuthorize("#userId == authentication.principal.userId")
+    public ResponseEntity<?> updateUserAccount(@RequestBody User user, @PathVariable int userId) throws ResourceNotFoundException {
+        User incomingUser = userService.findUser(userId);
+        if(incomingUser != null){
+            User updatedUser = User.builder()
+      //              .userId(user.getUserId())
+                    .email(user.getEmail())
+                    .password(passwordEncoder.encode(user.getPassword()))
+                    .username(user.getUsername())
+                    .role(Role.USER)
+                    .build();
+            userService.deleteUserAccount(userId); // delete previous records associated with this id.
+            return new ResponseEntity<>(userService.updateUserAccount(updatedUser), HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Your account could not be updated.", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 }

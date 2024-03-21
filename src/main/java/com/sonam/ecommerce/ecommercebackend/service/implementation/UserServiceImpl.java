@@ -42,4 +42,16 @@ public class UserServiceImpl implements UserService {
         return userRepo.findAll();  // return list of users from db
     }
 
+    @Override
+    public String deleteUserAccount(int userId) throws ResourceNotFoundException {
+        User user = userRepo.findById(userId).orElseThrow(()-> new ResourceNotFoundException("User not found for id::"+userId));
+        userRepo.delete(user);
+        return "Your account has been deleted.";
+    }
+
+    @Override
+    public User updateUserAccount(User updatedUser) {
+        return userRepo.save(updatedUser);
+    }
+
 }
