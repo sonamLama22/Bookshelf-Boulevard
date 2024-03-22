@@ -11,6 +11,7 @@ import java.util.Optional;
 @Repository
 public interface TokenRepo extends JpaRepository<Token, Integer> {
 
+    // Query methods
     @Query("""
             select t from Token t inner join User u on t.user.id = u.id
             where u.id = :userId and (t.expired = false )
