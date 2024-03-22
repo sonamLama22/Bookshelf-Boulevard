@@ -1,5 +1,6 @@
 package com.sonam.ecommerce.ecommercebackend.service;
 
+import com.sonam.ecommerce.ecommercebackend.dto.UserDto;
 import com.sonam.ecommerce.ecommercebackend.entity.User;
 import com.sonam.ecommerce.ecommercebackend.exception.ResourceNotFoundException;
 

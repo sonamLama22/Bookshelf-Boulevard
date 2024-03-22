@@ -7,6 +7,7 @@ import com.sonam.ecommerce.ecommercebackend.service.implementation.UserServiceIm
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -35,8 +37,16 @@ public class AdminApiController {
     @GetMapping("/getUsers")
     public ResponseEntity<?> getUsers(){
         List<User> list = userService.findUsers();
-        System.out.println(list);
-        return new ResponseEntity<>(HttpStatus.OK).ok(list);
+        List<UserDto> newList = null;
+        if(!list.isEmpty()){
+            newList = new ArrayList<>();
+            for(User user : list){
+                UserDto userDto = new UserDto();
+                BeanUtils.copyProperties(user, userDto);
+                newList.add(userDto);
+            }
+        }
+        return new ResponseEntity<>(HttpStatus.OK).ok(newList);
     }
 
     // http://localhost:8080/api/admin/getUserInfo/{userId}
