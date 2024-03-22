@@ -24,13 +24,59 @@ public class BookApiController {
     @Autowired
     GenreServiceImpl genreService;
 
+    // localhost:8080/api/admin/addBook
     @PostMapping(value = "/admin/addBook", headers = ("content-type=multipart/*"))
     public ResponseEntity<?> addBook(@RequestPart("file") MultipartFile file,
                                      @RequestPart("data") BookDto bookDto) throws Exception {
-        
+
         Book book = new Book();
         BeanUtils.copyProperties(bookDto, book);
         Book bookAdded = bookService.addBook(book, file);
         return new ResponseEntity<>(bookAdded, HttpStatus.OK);
     }
+
+    @GetMapping("/admin/getBook/{bookId}")
+    public ResponseEntity<BookDto> getBook(@PathVariable int bookId) throws ResourceNotFoundException {
+        Book book = bookService.getBook(bookId);
+        BookDto bookResponse = new BookDto();
+        BeanUtils.copyProperties(book, bookResponse);
+        return new ResponseEntity<>(bookResponse, HttpStatus.OK);
+    }
+
+    // localhost:8080/api/admin/updateBook/4
+    @PutMapping(value="/admin/updateBook/{bookId}", headers = ("content-type=multipart/*"))
+    public ResponseEntity<?> updateBook(@RequestPart("file") MultipartFile file,
+                                        @RequestPart("data") Book book, @PathVariable int bookId) throws Exception {
+        Book b = bookService.bookExists(bookId);
+        if(b != null){
+            Book updateBook = Book.builder()
+                    .title(book.getTitle())
+                    .author(book.getAuthor())
+                    .genre(book.getGenre())
+                    .price(book.getPrice())
+                    .description(book.getDescription())
+                    .copiesAvailable(book.getCopiesAvailable())
+                    .fileName(book.getFileName())
+                    .fileType(book.getFileType())
+                    .data(book.getData())
+                    .build();
+            bookService.deleteBook(bookId); // delete previous book.
+            Book updatedBook = bookService.updateBook(updateBook, file);
+            return new ResponseEntity<>(updatedBook, HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Book could not be updated.", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @DeleteMapping("/admin/deleteBook/{bookId}")
+    public ResponseEntity<?> deleteBook(@PathVariable int bookId) throws ResourceNotFoundException {
+        Book book = bookService.bookExists(bookId);
+        if(book != null){
+            bookService.deleteBook(bookId);
+            return new ResponseEntity<>(book.getTitle()+ " has been deleted", HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Book could not deleted", HttpStatus.OK);
+    }
+
+    
+
 }

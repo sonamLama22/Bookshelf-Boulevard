@@ -25,5 +25,6 @@ public class BookDto {
     private String description;
     private String fileName;
     private String fileType;
+    private byte[] data;
 
 }
