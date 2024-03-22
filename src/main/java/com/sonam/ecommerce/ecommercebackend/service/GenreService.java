@@ -9,6 +9,9 @@ public interface GenreService {
 
     public Genre addGenre(Genre genre);
     public Genre getGenre(int genreId) throws ResourceNotFoundException;
+
+    public String deleteGenre(int genreId) throws ResourceNotFoundException;
+
     public List<Genre> findAllGenres();
 
 }

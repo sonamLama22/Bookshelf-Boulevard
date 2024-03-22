@@ -1,6 +1,7 @@
 package com.sonam.ecommerce.ecommercebackend.controllers;
 
 import com.sonam.ecommerce.ecommercebackend.entity.Genre;
+import com.sonam.ecommerce.ecommercebackend.exception.ResourceNotFoundException;
 import com.sonam.ecommerce.ecommercebackend.service.implementation.GenreServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,16 @@ public class GenreApiController {
     public ResponseEntity<?> addGenre(@RequestBody Genre genre){
         Genre genreAdded = genreService.addGenre(genre);
         return new ResponseEntity<>(genreAdded, HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/getGenre/{genreId}")
+    public ResponseEntity<?> getGenre(@PathVariable int genreId) throws ResourceNotFoundException {
+        return new ResponseEntity<>(genreService.getGenre(genreId), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/admin/deleteGenre/{genreId}")
+    public ResponseEntity<?> deleteGenre(@PathVariable int genreId) throws ResourceNotFoundException {
+        return new ResponseEntity<>(genreService.deleteGenre(genreId), HttpStatus.OK);
     }
 
     // localhost:8080/api/admin/genres

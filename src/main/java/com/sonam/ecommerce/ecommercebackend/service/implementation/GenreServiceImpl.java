@@ -22,7 +22,15 @@ public class GenreServiceImpl implements GenreService {
 
     @Override
     public Genre getGenre(int genreId) throws ResourceNotFoundException {
-        return null;
+        Genre genre = genreRepo.findById(genreId).orElseThrow(()-> new ResourceNotFoundException("Genre not found for this id::"+genreId));
+        return genre;
+    }
+
+    @Override
+    public String deleteGenre(int genreId) throws ResourceNotFoundException {
+        Genre genre = genreRepo.findById(genreId).orElseThrow(()-> new ResourceNotFoundException("Genre not found for this id::"+genreId));
+        genreRepo.delete(genre);
+        return genre.getGenreName() + " genre has been deleted.";
     }
 
     @Override
