@@ -107,8 +107,8 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Book findBookByTitle(String title) throws ResourceNotFoundException {
-        Book book = bookRepo.findBookByTitle(title);
+    public Book findByTitle(String title) throws ResourceNotFoundException {
+        Book book = bookRepo.findByTitle(title);
         if(book != null){
             return book;
         }
@@ -118,23 +118,23 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<Book> findBooksByAuthor(String author) throws ResourceNotFoundException {
-        List<Book> books = bookRepo.findBooksByAuthor(author);
+    public List<Book> findByAuthor(String author) throws ResourceNotFoundException {
+        List<Book> books = bookRepo.findByAuthor(author);
         if(books.isEmpty()) throw new ResourceNotFoundException("List is empty.");
         return books;
     }
 
     @Override
-    public List<Book> findBooksByGenreId(int genreId) throws ResourceNotFoundException {
-        List<Book> books = bookRepo.findBooksByGenre_genreId(genreId);
+    public List<Book> findByGenre(String genreName) throws ResourceNotFoundException {
+        List<Book> books = bookRepo.findByGenreName(genreName);
         if(books.isEmpty()) throw new ResourceNotFoundException("List is empty");
         return books;
     }
 
     @Override
-    public List<Book> findBooksByTitleContaining(String titleKeyword) throws ResourceNotFoundException {
-        List<Book> books = bookRepo.findBooksByTitleContaining(titleKeyword);
-        if(books.isEmpty()) throw new ResourceNotFoundException("List is empty");
+    public List<Book> findByTitleContaining(String titleKeyword) throws ResourceNotFoundException {
+        List<Book> books = bookRepo.findByTitleContaining(titleKeyword);
+        if(books.isEmpty()) throw new ResourceNotFoundException("No books found containing keyword::"+titleKeyword);
         return books;
     }
 }

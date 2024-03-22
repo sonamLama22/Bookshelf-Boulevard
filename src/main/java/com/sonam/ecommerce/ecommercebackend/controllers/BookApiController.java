@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -77,6 +79,21 @@ public class BookApiController {
         return new ResponseEntity<>("Book could not deleted", HttpStatus.OK);
     }
 
+    @GetMapping("/admin/getAllBooks")
+    public ResponseEntity<?> getAllBooks() throws ResourceNotFoundException {
+        List<Book> bookList = bookService.getAllBooks();
+        return new ResponseEntity<>(bookList, HttpStatus.OK);
+    }
 
+    @GetMapping("/admin/copiesAvailable/{bookId}")
+    public ResponseEntity<?> getCopiesAvailable(@PathVariable int bookId) throws ResourceNotFoundException {
+        int num = bookService.copiesAvailable(bookId);
+        return new ResponseEntity<>(num, HttpStatus.OK);
+    }
 
+    @GetMapping("/admin/search/by-title")
+    public ResponseEntity<?> findBooksByTitleContaining(@RequestParam("title") String title) throws ResourceNotFoundException {
+        List<Book> books = bookService.findByTitleContaining(title);
+        return new ResponseEntity<>(books, HttpStatus.OK);
+    }
 }

@@ -19,9 +19,9 @@ public interface BookService {
 
     public Book bookExists(int bookId) throws ResourceNotFoundException;
 
-    public Book findBookByTitle(String title) throws ResourceNotFoundException;
-    public List<Book> findBooksByAuthor(String author) throws ResourceNotFoundException;
-    public List<Book> findBooksByGenreId(int genreId) throws ResourceNotFoundException;
-    public List<Book> findBooksByTitleContaining(String titleKeyword) throws ResourceNotFoundException;
+    public Book findByTitle(String title) throws ResourceNotFoundException;
+    public List<Book> findByAuthor(String author) throws ResourceNotFoundException;
+    public List<Book> findByGenre(String genreName) throws ResourceNotFoundException;
+    public List<Book> findByTitleContaining(String titleKeyword) throws ResourceNotFoundException;
 
 }
