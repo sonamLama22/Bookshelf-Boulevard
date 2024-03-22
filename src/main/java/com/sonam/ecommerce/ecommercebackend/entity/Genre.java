@@ -27,10 +27,8 @@ public class Genre {
     @Column(name = "genre_name")
     private String genreName;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "book_genre",
-    joinColumns = @JoinColumn(name = "genre_id"),
-    inverseJoinColumns = @JoinColumn(name = "book_id"))
+
     @JsonIgnore
+    @OneToMany(mappedBy = "genre", cascade = CascadeType.ALL)
     private List<Book> books;
 }

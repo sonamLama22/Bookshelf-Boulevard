@@ -24,10 +24,10 @@ public class BookApiController {
     @Autowired
     GenreServiceImpl genreService;
 
-    @PostMapping(value = "/admin/addBook/genreId={genreId}", headers = ("content-type=multipart/*"))
-    public ResponseEntity<?> addBook(@RequestPart("file") MultipartFile file, @PathVariable int genreId,
+    @PostMapping(value = "/admin/addBook", headers = ("content-type=multipart/*"))
+    public ResponseEntity<?> addBook(@RequestPart("file") MultipartFile file,
                                      @RequestPart("data") BookDto bookDto) throws Exception {
-        genreService.getGenre(genreId); //check if genre exists.
+        
         Book book = new Book();
         BeanUtils.copyProperties(bookDto, book);
         Book bookAdded = bookService.addBook(book, file);

@@ -32,7 +32,7 @@ public class BookServiceImpl implements BookService {
                     .price(book.getPrice())
                     .copiesAvailable((book.getCopiesAvailable()))
                     .description(book.getDescription())
-                    .genres(book.getGenres())
+                    .genre(book.getGenre())
                     .fileName(fileName)
                     .fileType(file.getContentType())
                     .data(file.getBytes())

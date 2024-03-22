@@ -37,10 +37,10 @@ public class Book {
     @Column(name = "price", columnDefinition = "DECIMAL(10,2)")
     private BigDecimal price;
 
-    // a book can belong to a many genres.
-    //@NotEmpty(message = "A book must have at least one genre")
-    @ManyToMany(mappedBy = "books")
-    private List<Genre> genres;
+    //@NotBlank(message = "A book must have a genre")
+    @ManyToOne
+    @JoinColumn(name = "genre_id")
+    private Genre genre;
 
     @NotBlank(message = "Book description must contain at least 1 character")
     private String description;
