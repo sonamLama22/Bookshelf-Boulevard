@@ -1,5 +1,6 @@
 package com.sonam.ecommerce.ecommercebackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -42,9 +43,15 @@ public class User implements UserDetails {
 
     private Role role;
 
-    // Error : failed to lazily initialize.
+    // Could potentially give Error : failed to lazily initialize.
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Token> tokens;
+
+    @JsonIgnore
+    // "user" field in the Cart entity is the owning side of the relationship
+    //  a User entity is removed from the database, its associated Cart entity should also be removed (orphaned).
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private Cart cart;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

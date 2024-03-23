@@ -1,5 +1,6 @@
 package com.sonam.ecommerce.ecommercebackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -56,5 +57,9 @@ public class Book {
 
     @Lob
     private byte[] data;
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "books")
+    private List<Cart> carts;
 
 }
