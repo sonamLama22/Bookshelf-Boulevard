@@ -10,6 +10,7 @@ import java.util.Optional;
 @Repository
 public interface UserRepo extends JpaRepository<User, Integer> {
 
+    // Query methods
     public Optional<User> findByEmail(String email);
     public User findByRole(Role role);
 
