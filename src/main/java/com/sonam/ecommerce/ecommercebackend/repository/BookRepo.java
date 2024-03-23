@@ -15,7 +15,7 @@ public interface BookRepo extends JpaRepository<Book, Integer> {
 
     // Query methods
     public Book findByTitle(String title);
-    public List<Book> findByAuthor(String author);
+    public List<Book> findByAuthorContaining(String author);
 
     @Query("SELECT b FROM Book b WHERE b.genre.genreName = :genreName")
     public List<Book> findByGenreName(@Param("genreName") String genreName);

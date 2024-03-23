@@ -106,20 +106,10 @@ public class BookServiceImpl implements BookService {
         return book;
     }
 
-    @Override
-    public Book findByTitle(String title) throws ResourceNotFoundException {
-        Book book = bookRepo.findByTitle(title);
-        if(book != null){
-            return book;
-        }
-        else{
-            throw new ResourceNotFoundException("Book not found for this title::"+title);
-        }
-    }
 
     @Override
     public List<Book> findByAuthor(String author) throws ResourceNotFoundException {
-        List<Book> books = bookRepo.findByAuthor(author);
+        List<Book> books = bookRepo.findByAuthorContaining(author);
         if(books.isEmpty()) throw new ResourceNotFoundException("List is empty.");
         return books;
     }

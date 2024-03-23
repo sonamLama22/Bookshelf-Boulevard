@@ -37,6 +37,7 @@ public class BookApiController {
         return new ResponseEntity<>(bookAdded, HttpStatus.OK);
     }
 
+    // localhost:8080/api/admin/getBook/1
     @GetMapping("/admin/getBook/{bookId}")
     public ResponseEntity<BookDto> getBook(@PathVariable int bookId) throws ResourceNotFoundException {
         Book book = bookService.getBook(bookId);
@@ -69,6 +70,7 @@ public class BookApiController {
         return new ResponseEntity<>("Book could not be updated.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    // localhost:8080/api/admin/deleteBook/2
     @DeleteMapping("/admin/deleteBook/{bookId}")
     public ResponseEntity<?> deleteBook(@PathVariable int bookId) throws ResourceNotFoundException {
         Book book = bookService.bookExists(bookId);
@@ -79,21 +81,39 @@ public class BookApiController {
         return new ResponseEntity<>("Book could not deleted", HttpStatus.OK);
     }
 
+    // localhost:8080/api/admin/getAllBooks
     @GetMapping("/admin/getAllBooks")
     public ResponseEntity<?> getAllBooks() throws ResourceNotFoundException {
         List<Book> bookList = bookService.getAllBooks();
         return new ResponseEntity<>(bookList, HttpStatus.OK);
     }
 
+    // localhost:8080/api/admin/copiesAvailable/6
     @GetMapping("/admin/copiesAvailable/{bookId}")
     public ResponseEntity<?> getCopiesAvailable(@PathVariable int bookId) throws ResourceNotFoundException {
         int num = bookService.copiesAvailable(bookId);
         return new ResponseEntity<>(num, HttpStatus.OK);
     }
 
-    @GetMapping("/admin/search/by-title")
+    // localhost:8080/api/admin/search/by-title-keyword?title=Algorithms
+    @GetMapping("/admin/search/by-title-keyword")
     public ResponseEntity<?> findBooksByTitleContaining(@RequestParam("title") String title) throws ResourceNotFoundException {
         List<Book> books = bookService.findByTitleContaining(title);
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
+
+    // localhost:8080/api/admin/search/by-author?name=Haruki
+    @GetMapping("/admin/search/by-author")
+    public ResponseEntity<?> findBooksByAuthor(@RequestParam("name") String name) throws ResourceNotFoundException {
+        List<Book> books = bookService.findByAuthor(name);
+        return new ResponseEntity<>(books, HttpStatus.OK);
+    }
+
+    // localhost:8080/api/admin/search/by-genre?genre=science+fiction
+    @GetMapping("/admin/search/by-genre")
+    public ResponseEntity<?> findByGenre(@RequestParam("genre") String genre) throws ResourceNotFoundException {
+        List<Book> books = bookService.findByGenre(genre);
+        return new ResponseEntity<>(books, HttpStatus.OK);
+    }
+
 }
