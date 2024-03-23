@@ -6,6 +6,7 @@ import com.sonam.ecommerce.ecommercebackend.service.implementation.GenreServiceI
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,7 +36,8 @@ public class GenreApiController {
     }
 
     // localhost:8080/api/admin/genres
-    @GetMapping("/admin/genres")
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @GetMapping("/genres")
     public ResponseEntity<?> getGenres(){
         List<Genre> list = genreService.findAllGenres();
         return new ResponseEntity<>(list, HttpStatus.OK);

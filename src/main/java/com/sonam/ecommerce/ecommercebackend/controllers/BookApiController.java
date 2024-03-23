@@ -10,6 +10,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -89,28 +90,32 @@ public class BookApiController {
     }
 
     // localhost:8080/api/admin/copiesAvailable/6
-    @GetMapping("/admin/copiesAvailable/{bookId}")
+    @Secured({"ROLE_ADMIN", "ROLE_USER"}) //Allow both admin and user roles to access this endpoint
+    @GetMapping("/copiesAvailable/{bookId}")
     public ResponseEntity<?> getCopiesAvailable(@PathVariable int bookId) throws ResourceNotFoundException {
         int num = bookService.copiesAvailable(bookId);
         return new ResponseEntity<>(num, HttpStatus.OK);
     }
 
     // localhost:8080/api/admin/search/by-title-keyword?title=Algorithms
-    @GetMapping("/admin/search/by-title-keyword")
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @GetMapping("/search/by-title-keyword")
     public ResponseEntity<?> findBooksByTitleContaining(@RequestParam("title") String title) throws ResourceNotFoundException {
         List<Book> books = bookService.findByTitleContaining(title);
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
 
     // localhost:8080/api/admin/search/by-author?name=Haruki
-    @GetMapping("/admin/search/by-author")
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @GetMapping("/search/by-author")
     public ResponseEntity<?> findBooksByAuthor(@RequestParam("name") String name) throws ResourceNotFoundException {
         List<Book> books = bookService.findByAuthor(name);
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
 
     // localhost:8080/api/admin/search/by-genre?genre=science+fiction
-    @GetMapping("/admin/search/by-genre")
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @GetMapping("/search/by-genre")
     public ResponseEntity<?> findByGenre(@RequestParam("genre") String genre) throws ResourceNotFoundException {
         List<Book> books = bookService.findByGenre(genre);
         return new ResponseEntity<>(books, HttpStatus.OK);
