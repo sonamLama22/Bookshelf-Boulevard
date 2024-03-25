@@ -46,6 +46,7 @@ public class User implements UserDetails {
 
     // Could potentially give Error : failed to lazily initialize.
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Token> tokens;
 //
 //    @JsonIgnore
