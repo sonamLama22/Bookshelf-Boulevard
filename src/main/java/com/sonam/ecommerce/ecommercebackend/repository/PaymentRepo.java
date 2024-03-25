@@ -10,5 +10,5 @@ import java.util.Optional;
 @Repository
 public interface PaymentRepo extends JpaRepository<Payment, Integer> {
 
-    Optional<Payment> findByPaymentHolder(User paymentHolder);
+    Optional<Payment> findByPaymentHolder(Optional<User> paymentHolder);
 }

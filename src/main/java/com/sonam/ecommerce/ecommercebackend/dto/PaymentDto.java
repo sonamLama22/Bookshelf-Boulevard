@@ -9,5 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PaymentDto {
     private int amount;
+    private String currency;
     private String receiptEmail;
 }
