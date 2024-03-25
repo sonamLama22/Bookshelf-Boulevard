@@ -12,6 +12,8 @@ import com.sonam.ecommerce.ecommercebackend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,7 +29,7 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Override
     public CartItem createCartItem(CartItem cartItem) {
-        cartItem.setQuantity(1);
+        cartItem.setQuantity(cartItem.getQuantity());
         cartItem.setPrice(cartItem.getBook().getPrice()*cartItem.getQuantity());
         return cartItemRepo.save(cartItem);
     }
@@ -72,5 +74,15 @@ public class CartItemServiceImpl implements CartItemService {
             return cartItemOptional.get();
         }
         throw new ResourceNotFoundException("Cart item not found for id::"+cartItemId);
+    }
+
+    @Override
+    public List<CartItem> getCartItemsForUser(User user) {
+        Cart cart = user.getCart();
+        if(cart != null){
+            return cartItemRepo.findByCart(cart);
+        }else{
+            return Collections.emptyList(); // Return an empty list if the user doesn't have a cart
+        }
     }
 }
