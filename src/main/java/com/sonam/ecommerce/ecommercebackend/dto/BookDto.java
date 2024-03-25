@@ -19,7 +19,7 @@ public class BookDto {
     private int bookId;
     private String title;
     private String author;
-    private BigDecimal price;
+    private Integer price;
     private int copiesAvailable;
     private Genre genre;
     private String description;

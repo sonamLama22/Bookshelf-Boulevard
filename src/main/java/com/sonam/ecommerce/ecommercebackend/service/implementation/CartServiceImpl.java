@@ -101,5 +101,10 @@ public class CartServiceImpl implements CartService {
         cartRepo.save(cart);
     }
 
+    @Override
+    public void updateCart(Cart cart) {
+        cartRepo.save(cart);
+    }
+
 
 }
