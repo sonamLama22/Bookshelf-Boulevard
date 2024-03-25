@@ -1,5 +1,6 @@
 package com.sonam.ecommerce.ecommercebackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -32,10 +33,8 @@ public class Book {
     @Size(max = 100, message = "Author name length must not exceed 100 characters")
     private String author;
 
-    @DecimalMin(value = "0.00", message = "Price must be greater than 0")
-    @Digits(integer = 4, fraction = 2, message = "Price must have at most 2 digits before and after the decimal point")
-    @Column(name = "price", columnDefinition = "DECIMAL(10,2)")
-    private BigDecimal price;
+    @Column(name = "price")
+    private Integer price;
 
     //@NotBlank(message = "A book must have a genre")
     @ManyToOne
@@ -56,5 +55,6 @@ public class Book {
 
     @Lob
     private byte[] data;
+
 
 }
