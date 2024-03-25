@@ -11,7 +11,9 @@ import com.sonam.ecommerce.ecommercebackend.repository.TokenRepo;
 import com.sonam.ecommerce.ecommercebackend.repository.UserRepo;
 import com.sonam.ecommerce.ecommercebackend.security.JwtHelper;
 import com.sonam.ecommerce.ecommercebackend.service.AuthenticationService;
+import com.sonam.ecommerce.ecommercebackend.service.CartService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,6 +36,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final TokenRepo tokenRepo;
 
+    @Autowired
+    private CartService cartService;
+
 
     @Override
     public JwtAuthResponse signup(SignUpRequest signUpRequest){
@@ -44,6 +49,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setRole(Role.USER);
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
         var savedUser = userRepo.save(user);
+        cartService.createCart(savedUser);
         var jwt = jwtHelper.generateToken(user);
 
         // persist generated token in database.

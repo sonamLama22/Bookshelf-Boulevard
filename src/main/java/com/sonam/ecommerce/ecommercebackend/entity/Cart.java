@@ -1,13 +1,17 @@
 package com.sonam.ecommerce.ecommercebackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.sonam.ecommerce.ecommercebackend.entity.CartItem;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.*;
 
 @Data
 @AllArgsConstructor
@@ -21,21 +25,22 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    // a cart contains multiple books, a book can belong to multiple carts.
-   @ManyToMany
-   @JoinTable(
-           name = "cart_book",
-           joinColumns = @JoinColumn(name = "cart_id", referencedColumnName = "id"),
-           inverseJoinColumns = @JoinColumn(name = "book_id", referencedColumnName = "book_id")
-   )
-   private List<Book> books;
+
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column(name = "cart_items")
+    private List<CartItem> cartItems = new ArrayList<>();
 
    // FK "user_id"
-   @OneToOne(fetch = FetchType.EAGER)
+   @JsonIgnore
+   @OneToOne
    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
    private User user;
 
-//    private int quantity;
-//    private float amount;
+   @Column(name = "total_item")
+   private int totalItem;
+
+   @Column(name = "total_price")
+   private double totalPrice;
+
 
 }

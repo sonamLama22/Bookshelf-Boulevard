@@ -4,6 +4,7 @@ import com.sonam.ecommerce.ecommercebackend.dto.JwtAuthResponse;
 import com.sonam.ecommerce.ecommercebackend.dto.RefreshTokenRequest;
 import com.sonam.ecommerce.ecommercebackend.dto.SignInRequest;
 import com.sonam.ecommerce.ecommercebackend.dto.SignUpRequest;
+import com.sonam.ecommerce.ecommercebackend.service.CartService;
 import com.sonam.ecommerce.ecommercebackend.service.implementation.AuthenticationServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,4 +40,6 @@ public class AuthController {
     public ResponseEntity<JwtAuthResponse> refresh(@RequestBody RefreshTokenRequest refreshTokenRequest){
         return new ResponseEntity<>(HttpStatus.OK).ok(authenticationService.refreshToken(refreshTokenRequest));
     }
+
+
 }
