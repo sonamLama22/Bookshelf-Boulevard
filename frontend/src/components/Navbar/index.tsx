@@ -3,8 +3,8 @@ import { CgMenu } from "react-icons/cg";
 import { IoCloseSharp } from "react-icons/io5";
 import { useState } from "react";
 import { useMediaQuery } from "react-responsive";
-import SignupButton from "../SignupButton";
 import NavLink from "../NavLink";
+import Button from "../Button";
 
 function Navbar() {
   const flexBetween = "flex items-center justify-between";
@@ -22,18 +22,17 @@ function Navbar() {
             {/* RIGHT SIDE */}
             {isAboveMediumScreens ? (
               <div className={`${flexBetween}  gap-16  `}>
-                <NavLink to="/about" text="About" />
-                <NavLink to="/login" text="Login" />
+                <NavLink to="/home" text="Home" />
+                <NavLink to="/about" text="About us" />
+                <Link to={"/login"} className="m-3">
+                  <Button text="Login" />
+                </Link>
                 <Link to={"/signup"} className="m-3">
-                  <SignupButton />
+                  <Button text="Sign Up" />
                 </Link>
               </div>
             ) : (
               <div className="flex items-center gap-6 ">
-                <Link to={"/signup"} className="m-3">
-                  <SignupButton />
-                </Link>
-
                 <button onClick={() => setIsMenuToggled(!isMenuToggled)}>
                   <CgMenu className="text-3xl text-black cursor-pointer"></CgMenu>
                 </button>
@@ -54,8 +53,10 @@ function Navbar() {
           </div>
           {/* MENU ITEMS */}
           <div className="ml-[33%] flex flex-col gap-10 text-2xl">
-            <NavLink to="/about" text="About" />
+            <NavLink to="/home" text="Home" />
+            <NavLink to="/about" text="About us" />
             <NavLink to="/login" text="Login" />
+            <NavLink to="/signup" text="Sign Up" />
           </div>
         </div>
       )}
