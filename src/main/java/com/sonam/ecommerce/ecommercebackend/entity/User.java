@@ -35,6 +35,7 @@ public class User implements UserDetails {
     @Email(message = "Email should be valid")
     @NotBlank(message = "Email should not be empty")
     @JsonProperty("email")
+    @Column(name = "email")
     private String email;
 
     @NotEmpty(message = "Password cannot be empty")
@@ -61,6 +62,12 @@ public class User implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
+
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @OneToOne(mappedBy = "paymentHolder", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Payment payment;
 
     @Override
     public String getUsername(){

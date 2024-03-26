@@ -1,15 +1,20 @@
 package com.sonam.ecommerce.ecommercebackend.controllers;
 
 import com.sonam.ecommerce.ecommercebackend.dto.OrderDto;
+import com.sonam.ecommerce.ecommercebackend.dto.PaymentDto;
 import com.sonam.ecommerce.ecommercebackend.entity.Order;
 import com.sonam.ecommerce.ecommercebackend.entity.User;
 import com.sonam.ecommerce.ecommercebackend.exception.ResourceNotFoundException;
 import com.sonam.ecommerce.ecommercebackend.service.OrderService;
+import com.sonam.ecommerce.ecommercebackend.service.PaymentService;
 import com.sonam.ecommerce.ecommercebackend.service.UserService;
+import com.sonam.ecommerce.ecommercebackend.service.implementation.PaymentServiceImpl;
+import com.stripe.exception.StripeException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,18 +22,21 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 public class OrderApiController {
+
     @Autowired
     OrderService orderService;
     @Autowired
     UserService userService;
+    @Autowired
+    PaymentService paymentService;
 
     @PostMapping("/user/create-order/{userId}")
-    public ResponseEntity<OrderDto> createOrder (@PathVariable int userId) throws ResourceNotFoundException {
+    @PreAuthorize("#userId == authentication.principal.userId")
+    public ResponseEntity<PaymentDto> createOrder (@PathVariable int userId) throws ResourceNotFoundException, StripeException {
         User user = userService.findUser(userId);
         Order order = orderService.createOrder(user);
-        OrderDto orderDto = new OrderDto();
-        BeanUtils.copyProperties(order, orderDto);
-        return new ResponseEntity<>(orderDto, HttpStatus.CREATED);
+        PaymentDto paymentDto = paymentService.addPaymentLink(order);
+        return new ResponseEntity<>(paymentDto, HttpStatus.CREATED);
     }
 
     @GetMapping("/admin/order/getAllOrders")
