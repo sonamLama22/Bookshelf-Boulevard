@@ -12,6 +12,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,6 +28,7 @@ public class CartApiController {
 
 
     @PutMapping("/user/cart/add-to-cart/{userId}")
+    @PreAuthorize("#userId == authentication.principal.userId")
     public ResponseEntity<?> addToCart(@RequestBody AddToCartRequest req, @PathVariable int userId)  throws ResourceNotFoundException {
         try{
             String message = cartService.addCartItem(userId, req);
@@ -41,6 +43,7 @@ public class CartApiController {
 
 
     @GetMapping("/user/cart/{userId}")
+    @PreAuthorize("#userId == authentication.principal.userId")
     public ResponseEntity<?> getCart(@PathVariable int userId) {
         Cart cart = cartService.getCart(userId);
         if (cart != null) {
@@ -54,6 +57,7 @@ public class CartApiController {
     }
 
     @DeleteMapping("/user/cart/{cartId}/items/{itemId}")
+    @PreAuthorize("#userId == authentication.principal.userId")
     public ResponseEntity<String> removeItemFromCart(@PathVariable int cartId, @PathVariable int itemId) {
         try {
             cartItemService.removeCartItem(cartId, itemId);
@@ -65,6 +69,7 @@ public class CartApiController {
 
 
     @DeleteMapping("/user/cart/remove/{cartId}")
+    @PreAuthorize("#userId == authentication.principal.userId")
     public ResponseEntity<String> removeCart(@PathVariable int cartId) throws ResourceNotFoundException {
         cartService.removeCart(cartId);
         return ResponseEntity.ok("Cart removed successfully.");

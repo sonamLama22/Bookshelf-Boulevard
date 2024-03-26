@@ -54,7 +54,7 @@ public class OrderServiceImpl implements OrderService {
         // create order
         Order createdOrder = Order.builder()
                 .user(user)
-                .orderItems(orderItems)
+                //.orderItems(orderItems)
                 .totalPrice(cart.getTotalPrice())
                 .totalItem(cart.getTotalItem())
                 .shippingAddress("New York")
@@ -86,12 +86,11 @@ public class OrderServiceImpl implements OrderService {
         return orderRepo.save(order);
     }
 
-//    @Override
-//    public Order placeOrder(User user) {
-//        List<CartItem> cartItems = cartItemService.getCartItemsForUser(user);
-//
-//
-//    }
+    @Override
+    public Order findOrderById(int orderId) throws ResourceNotFoundException {
+        return orderRepo.findById(orderId).get();
+    }
+
 
     @Override
     public Order placedOrder(int orderId) throws ResourceNotFoundException {

@@ -11,7 +11,8 @@ public interface OrderService {
 
     public Order createOrder(User user);
     public Order confirmedOrder(int orderId) throws ResourceNotFoundException;
-//    public Order placeOrder(User user);
+
+    public Order findOrderById(int orderId) throws ResourceNotFoundException;
     public void deleteOrder(int orderId) throws ResourceNotFoundException;
     public Order placedOrder(int orderId) throws ResourceNotFoundException;
     public Order shippedOrder(int orderId) throws ResourceNotFoundException;
