@@ -58,6 +58,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var refreshToken = jwtHelper.generateRefreshToken(new HashMap<>(), user);
 
         JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
+        jwtAuthResponse.setUsername(savedUser.getUsername());
+        jwtAuthResponse.setEmail(savedUser.getEmail());
         jwtAuthResponse.setToken(jwt);
         jwtAuthResponse.setRefreshToken(refreshToken);
         return jwtAuthResponse;
@@ -77,6 +79,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var refreshToken = jwtHelper.generateRefreshToken(new HashMap<>(), user);
 
         JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
+        jwtAuthResponse.setUsername(user.getUsername());
+        jwtAuthResponse.setEmail(user.getEmail());
         jwtAuthResponse.setToken(jwt);
         jwtAuthResponse.setRefreshToken(refreshToken);
         return jwtAuthResponse;
