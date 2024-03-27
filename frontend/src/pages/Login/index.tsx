@@ -1,9 +1,14 @@
 import { Formik, ErrorMessage, FormikValues, FormikHelpers } from "formik";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import "../../components/Form/Form.css";
 import InputField from "../../components/Form/InputField/index";
 import SubmitButton from "../../components/Form/SubmitButton";
+import { useEffect, useState } from "react";
+import { clearMessage } from "../../redux/slices/message";
+import { login } from "../../redux/slices/auth";
+import { RootState } from "../../redux/store/store";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks/hooks";
 
 interface FormValues {
   email: string;
@@ -11,6 +16,17 @@ interface FormValues {
 }
 
 const Login: React.FC = () => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const { isLoggedIn } = useAppSelector((state: RootState) => state.auth);
+  const { message } = useAppSelector((state: RootState) => state.message);
+
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(clearMessage());
+  }, [dispatch]);
+
   const initialValues: FormValues = {
     email: "",
     password: "",
@@ -23,16 +39,24 @@ const Login: React.FC = () => {
       .required("Password is required"),
   });
 
-  const navigate = useNavigate();
+  const handleSubmit = (formValue: FormValues) => {
+    const { email, password } = formValue;
+    setLoading(true);
 
-  const handleSubmit = (
-    values: FormikValues,
-    { setSubmitting }: FormikHelpers<FormValues>
-  ) => {
-    console.log(values);
-    navigate("/profile");
-    setSubmitting(false);
+    dispatch(login({ email, password }))
+      .unwrap()
+      .then(() => {
+        navigate("/profile");
+        window.location.reload();
+      })
+      .catch(() => {
+        setLoading(false);
+      });
   };
+
+  if (isLoggedIn) {
+    return <Navigate to="/profile" />;
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center ">
@@ -47,7 +71,6 @@ const Login: React.FC = () => {
           onSubmit={handleSubmit}
         >
           {({
-            isSubmitting,
             errors,
             touched,
             values,
@@ -101,11 +124,18 @@ const Login: React.FC = () => {
                 />
               </div>
 
-              <SubmitButton text="Login" disabled={isSubmitting} />
+              <SubmitButton text="Login" disabled={loading} />
             </form>
           )}
         </Formik>
       </div>
+      {message && (
+        <div className="form-group">
+          <div className="alert alert-danger" role="alert">
+            {message}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

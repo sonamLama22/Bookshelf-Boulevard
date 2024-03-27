@@ -4,26 +4,37 @@ import * as Yup from "yup";
 import "../../components/Form/Form.css";
 import InputField from "../../components/Form/InputField/index";
 import SubmitButton from "../../components/Form/SubmitButton";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks/hooks";
+import { useEffect, useState } from "react";
+import { clearMessage } from "../../redux/slices/message";
+import { register } from "../../redux/slices/auth";
 
 interface FormValues {
-  name: string;
+  username: string;
   email: string;
   password: string;
-  confirmPassword: string;
 }
 
 const SignupForm: React.FC = () => {
+  const [successful, setSuccessful] = useState(false);
+
+  const { message } = useAppSelector((state) => state.message);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(clearMessage());
+  }, [dispatch]);
+
   const initialValues: FormValues = {
-    name: "",
+    username: "",
     email: "",
     password: "",
-    confirmPassword: "",
   };
 
   const passwordRule = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
 
   const validationSchema = Yup.object().shape({
-    name: Yup.string()
+    username: Yup.string()
       .required("Name is required")
       .min(2, "Name must be minimum 2 characters long")
       .max(100, "Name must not be more than 100 characters"),
@@ -32,21 +43,28 @@ const SignupForm: React.FC = () => {
       .min(6, "Password must be at least 6 characters long")
       .required("Password is required")
       .matches(passwordRule, { message: "Please create a stronger password" }),
-    confirmPassword: Yup.string()
-      .oneOf([Yup.ref("password")], "Passwords must match")
-      .required("Confirm password is required"),
   });
 
   const navigate = useNavigate();
 
-  const handleSubmit = (
-    values: FormikValues,
-    { setSubmitting }: FormikHelpers<FormValues>
-  ) => {
-    console.log(values);
-    navigate("/login");
-    setSubmitting(false);
+  const handleSubmit = (formValue: FormValues) => {
+    const { username, email, password } = formValue;
+
+    setSuccessful(false);
+
+    dispatch(register({ username, email, password }))
+      .unwrap()
+      .then(() => {
+        setSuccessful(true);
+      })
+      .catch(() => {
+        setSuccessful(false);
+      });
   };
+
+  if (successful) {
+    navigate("/login");
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center ">
@@ -72,17 +90,17 @@ const SignupForm: React.FC = () => {
             <form className="max-w-sm mx-auto" onSubmit={handleSubmit}>
               <div className="mb-5">
                 <label
-                  htmlFor="name"
+                  htmlFor="username"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
-                  Name
+                  Username
                 </label>
                 <InputField
-                  name="name"
-                  value={values.name}
+                  name="username"
+                  value={values.username}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className={errors.name && touched.name ? "error" : ""}
+                  className={errors.username && touched.username ? "error" : ""}
                   type="text"
                   id="name"
                   placeholder="Enter your name"
@@ -133,40 +151,24 @@ const SignupForm: React.FC = () => {
                   className="error"
                 />
               </div>
-              <div className="mb-5">
-                <label
-                  htmlFor="repeat-password"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Repeat password
-                </label>
-
-                <InputField
-                  name="confirmPassword"
-                  value={values.confirmPassword}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  className={
-                    errors.confirmPassword && touched.confirmPassword
-                      ? "error"
-                      : ""
-                  }
-                  type="password"
-                  id="repeat-password"
-                  placeholder="Confirm your password"
-                />
-                <ErrorMessage
-                  name="confirmPassword"
-                  component="div"
-                  className="error"
-                />
-              </div>
 
               <SubmitButton text="Sign Up" disabled={isSubmitting} />
             </form>
           )}
         </Formik>
       </div>
+      {message && (
+        <div className="form-group">
+          <div
+            className={
+              successful ? "alert alert-success" : "alert alert-danger"
+            }
+            role="alert"
+          >
+            {message}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
