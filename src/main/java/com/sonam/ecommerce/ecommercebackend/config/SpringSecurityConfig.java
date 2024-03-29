@@ -48,7 +48,8 @@ public class SpringSecurityConfig {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    private final LogoutHandler logoutHandler;
+    @Autowired
+    private LogoutService logoutHandler;
 
     // configure HttpSecurity
     @Bean

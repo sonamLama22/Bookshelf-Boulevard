@@ -21,6 +21,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Book addBook(Book book, MultipartFile file) throws Exception {
+
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
         //handle validations
         try{

@@ -22,7 +22,7 @@ const Carousel: React.FC<CarouselProps> = ({ children }) => {
   };
 
   return (
-    <div className=" bg-red-300 flex items-center justify-between w-1/2 ml-auto">
+    <div className="  flex items-center justify-between w-1/2 ml-auto">
       <div className="overflow-hidden relative">
         <div
           className="flex transition-transform ease-out duration-500"

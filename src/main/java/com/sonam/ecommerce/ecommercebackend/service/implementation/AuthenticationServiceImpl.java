@@ -12,6 +12,7 @@ import com.sonam.ecommerce.ecommercebackend.repository.UserRepo;
 import com.sonam.ecommerce.ecommercebackend.security.JwtHelper;
 import com.sonam.ecommerce.ecommercebackend.service.AuthenticationService;
 import com.sonam.ecommerce.ecommercebackend.service.CartService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -42,6 +43,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public JwtAuthResponse signup(SignUpRequest signUpRequest){
+
+        // check if user already exist. if exist than authenticate the user
+        if(userRepo.findByUsername(signUpRequest.getUsername()).isPresent()) {
+            return null;
+        }
+
         User user = new User();
         user.setUserId(UUID.randomUUID().hashCode());
         user.setEmail(signUpRequest.getEmail());
@@ -58,7 +65,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var refreshToken = jwtHelper.generateRefreshToken(new HashMap<>(), user);
 
         JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
-        jwtAuthResponse.setUsername(savedUser.getUsername());
+//        jwtAuthResponse.setUsername(savedUser.getUsername());
         jwtAuthResponse.setEmail(savedUser.getEmail());
         jwtAuthResponse.setToken(jwt);
         jwtAuthResponse.setRefreshToken(refreshToken);
@@ -79,16 +86,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var refreshToken = jwtHelper.generateRefreshToken(new HashMap<>(), user);
 
         JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
-        jwtAuthResponse.setUsername(user.getUsername());
+//        jwtAuthResponse.setUsername(user.getUsername());
         jwtAuthResponse.setEmail(user.getEmail());
+        jwtAuthResponse.setId(user.getUserId());
         jwtAuthResponse.setToken(jwt);
+        jwtAuthResponse.setRole(user.getRole().toString());
         jwtAuthResponse.setRefreshToken(refreshToken);
         return jwtAuthResponse;
     }
 
     @Override
     public JwtAuthResponse refreshToken(RefreshTokenRequest refreshTokenRequest){
-        String userEmail = jwtHelper.getUsernameFromToken(refreshTokenRequest.getToken());
+        String userEmail = jwtHelper.extractUsername(refreshTokenRequest.getToken());
         User user = userRepo.findByEmail(userEmail).orElseThrow();
         // validate refresh token
         if(jwtHelper.validateToken(refreshTokenRequest.getToken(), user)){

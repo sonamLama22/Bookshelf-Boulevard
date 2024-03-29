@@ -1,3 +1,5 @@
+import PostForm from "../components/Form/PostForm";
+import AdminDashboard from "../containers/Admin/Dashboard";
 import { routerType } from "../types/router.types";
 import About from "./About";
 import Home from "./Home";
@@ -30,6 +32,31 @@ const pagesData: routerType[] = [
     path: "profile",
     element: <Profile />,
     title: "profile",
+  },
+  {
+    path: "profile/:id",
+    element: <Profile />,
+    title: "profile",
+  },
+  {
+    path: "getAllBooks",
+    element: <AdminDashboard />,
+    title: "getAllBooks",
+  },
+  {
+    path: "addBook",
+    element: <PostForm />,
+    title: "addBook",
+  },
+  {
+    path: "deleteBook/:id",
+    element: <AdminDashboard />,
+    title: "deleteBook",
+  },
+  {
+    path: "updateBook/:id",
+    element: <AdminDashboard />,
+    title: "updateBook",
   },
 ];
 

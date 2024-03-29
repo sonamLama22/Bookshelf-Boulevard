@@ -2,11 +2,11 @@ type Props = {
   name: string;
   type: string;
   id: string;
-  placeholder: string;
-  value: string;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onBlur: (event: React.FocusEvent<HTMLInputElement>) => void;
-  className: string;
+  placeholder?: string;
+  value?: string | number;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
+  className?: string;
 };
 
 const InputField = ({

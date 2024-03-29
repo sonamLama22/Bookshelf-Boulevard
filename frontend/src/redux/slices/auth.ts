@@ -10,6 +10,8 @@ interface User {
   username: string;
   email: string;
   password: string;
+  role: string;
+  token: string;
 }
 
 interface RegisterPayload {
@@ -118,7 +120,7 @@ const authSlice = createSlice({
       })
       .addCase(
         login.fulfilled,
-        (state, action: PayloadAction<{ user: User }>) => {
+        (state, action: PayloadAction<{ user: User; token: string }>) => {
           state.isLoggedIn = true;
           state.user = action.payload.user;
         }
