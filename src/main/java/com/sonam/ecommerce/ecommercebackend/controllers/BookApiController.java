@@ -29,12 +29,25 @@ public class BookApiController {
 
     // localhost:8080/api/admin/addBook
     @PostMapping(value = "/admin/addBook", headers = ("content-type=multipart/*"))
-    public ResponseEntity<?> addBook(@RequestPart("file") MultipartFile file,
+    public ResponseEntity<?> addBook(@RequestPart(value = "file", required = false) MultipartFile file,
                                      @RequestPart("data") BookDto bookDto) throws Exception {
 
         Book book = new Book();
         BeanUtils.copyProperties(bookDto, book);
-        Book bookAdded = bookService.addBook(book, file);
+        Book bookAdded = null;
+        if (file != null && !file.isEmpty()) {
+            bookAdded = bookService.addBook(book, file);
+        } else{
+            Book b = Book.builder().title(bookDto.getTitle())
+                    .genre(bookDto.getGenre())
+                    .bookId(bookDto.getBookId())
+                    .price(bookDto.getPrice())
+                    .author(bookDto.getAuthor())
+                    .description(bookDto.getDescription())
+                    .copiesAvailable(bookDto.getCopiesAvailable()).build();
+            return new ResponseEntity<>(b, HttpStatus.OK);
+        }
+
         return new ResponseEntity<>(bookAdded, HttpStatus.OK);
     }
 
@@ -49,7 +62,7 @@ public class BookApiController {
 
     // localhost:8080/api/admin/updateBook/4
     @PutMapping(value="/admin/updateBook/{bookId}", headers = ("content-type=multipart/*"))
-    public ResponseEntity<?> updateBook(@RequestPart("file") MultipartFile file,
+    public ResponseEntity<?> updateBook(@RequestPart(value = "file", required = false) MultipartFile file,
                                         @RequestPart("data") Book book, @PathVariable int bookId) throws Exception {
         Book b = bookService.bookExists(bookId);
         if(b != null){
@@ -71,6 +84,7 @@ public class BookApiController {
         return new ResponseEntity<>("Book could not be updated.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @CrossOrigin(origins = "http://localhost:5173")
     // localhost:8080/api/admin/deleteBook/2
     @DeleteMapping("/admin/deleteBook/{bookId}")
     public ResponseEntity<?> deleteBook(@PathVariable int bookId) throws ResourceNotFoundException {
@@ -83,7 +97,8 @@ public class BookApiController {
     }
 
     // localhost:8080/api/admin/getAllBooks
-    @GetMapping("/admin/getAllBooks")
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @GetMapping("/getAllBooks")
     public ResponseEntity<?> getAllBooks() throws ResourceNotFoundException {
         List<Book> bookList = bookService.getAllBooks();
         return new ResponseEntity<>(bookList, HttpStatus.OK);

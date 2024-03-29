@@ -8,6 +8,7 @@ import com.sonam.ecommerce.ecommercebackend.service.TokenService;
 import com.sonam.ecommerce.ecommercebackend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TokenServiceImpl implements TokenService {
@@ -18,6 +19,7 @@ public class TokenServiceImpl implements TokenService {
     @Autowired
     private UserService userService;
 
+    @Transactional
     @Override
     public String tokenExists(int userId) throws ResourceNotFoundException {
         User user = userService.findUser(userId);

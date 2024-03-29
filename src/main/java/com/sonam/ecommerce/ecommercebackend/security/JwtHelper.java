@@ -1,11 +1,14 @@
 package com.sonam.ecommerce.ecommercebackend.security;
 
+import com.sonam.ecommerce.ecommercebackend.repository.TokenRepo;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +24,9 @@ import java.util.function.Function;
 @Component
 public class JwtHelper  {
 
+    @Autowired
+    private TokenRepo tokenRepo;
+
     public static final long JWT_TOKEN_VALIDITY = 1 * 60 * 60; // token is valid for 1 hour
 
     private String secret = generateSafeToken(); // contains Base64-encoded secret key
@@ -34,7 +40,7 @@ public class JwtHelper  {
     }
 
     //retrieve username(email) from jwt token
-    public String getUsernameFromToken(String token) {
+    public String extractUsername(String token) {
         return getClaimFromToken(token, Claims::getSubject);
     }
 
@@ -86,11 +92,16 @@ public class JwtHelper  {
                 .signWith(SignatureAlgorithm.HS512, secret).compact();
     }
 
+
+
     //validate token
     public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = getUsernameFromToken(token); //extract username
+        final String username = extractUsername(token); //extract username
+        // to check if user is logged out
+        boolean isValidToken =  tokenRepo.findByToken(token)
+                .map(t -> !t.isExpired()).orElse(false) ;
         // check if username matches the username of 'userDetails' obj
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token)) && isValidToken;
     }
 
     // obtain a signing key for JWT token generation using a secret.

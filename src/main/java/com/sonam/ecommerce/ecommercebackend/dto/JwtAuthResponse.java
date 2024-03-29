@@ -13,6 +13,8 @@ public class JwtAuthResponse {
 
     private String token;
     private String refreshToken;
-    private String username;
+//    private String username;
     private String email;
+    private int id;
+    private String role;
 }

@@ -1,12 +1,20 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-const initialState = {};
+// Define the state slice interface
+interface MessageState {
+  message: string | null; // Assuming message is of type string
+}
+
+// Define the initial state
+const initialState: MessageState = {
+  message: null,
+};
 
 const messageSlice = createSlice({
   name: "message",
   initialState,
   reducers: {
-    setMessage: (state, action) => {
+    setMessage: (state, action: PayloadAction<string>) => {
       return { message: action.payload };
     },
     clearMessage: () => {

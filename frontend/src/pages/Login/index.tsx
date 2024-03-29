@@ -46,17 +46,15 @@ const Login: React.FC = () => {
     dispatch(login({ email, password }))
       .unwrap()
       .then(() => {
-        navigate("/profile");
+        if (isLoggedIn) {
+          navigate("/profile");
+        }
         window.location.reload();
       })
       .catch(() => {
         setLoading(false);
       });
   };
-
-  if (isLoggedIn) {
-    return <Navigate to="/profile" />;
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center ">

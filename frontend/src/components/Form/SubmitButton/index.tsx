@@ -1,6 +1,6 @@
 type Props = {
   text: string;
-  disabled: boolean;
+  disabled?: boolean;
 };
 
 function SubmitButton({ text, disabled }: Props) {
